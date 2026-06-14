@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Magic Kidney — 지원 / Support</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Pretendard", "Apple SD Gothic Neo", system-ui, sans-serif;
+    color: #15171A;
+    background: linear-gradient(160deg, #FBF1E6 0%, #E7E0F2 100%);
+    min-height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px;
+    line-height: 1.6;
+  }
+  .card {
+    background: #fff; border-radius: 24px; max-width: 560px; width: 100%;
+    padding: 40px 32px; box-shadow: 0 16px 40px rgba(21,23,26,0.10);
+  }
+  .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+  .dot {
+    width: 40px; height: 40px; border-radius: 50%;
+    background: radial-gradient(circle at 38% 30%, #D6EEDF, #7FC2A0 55%, #4E9974);
+    position: relative; flex: none;
+  }
+  .dot::after {
+    content: ""; position: absolute; left: 50%; top: -8px; transform: translateX(-50%);
+    border-left: 9px solid transparent; border-right: 9px solid transparent;
+    border-bottom: 18px solid #6B62C9;
+  }
+  .brand h1 { font-size: 22px; font-weight: 800; letter-spacing: -0.4px; }
+  h2 { font-size: 15px; font-weight: 800; margin: 24px 0 8px; color: #15171A; }
+  p { font-size: 15px; color: #4D525A; }
+  .eyebrow { font-size: 12px; font-weight: 700; letter-spacing: 0.6px; color: #1A8E5C; text-transform: uppercase; margin-bottom: 4px; }
+  a.mail {
+    display: inline-block; margin-top: 6px; font-size: 17px; font-weight: 800;
+    color: #1A8E5C; text-decoration: none;
+  }
+  a.mail:hover { text-decoration: underline; }
+  .divider { height: 1px; background: rgba(21,23,26,0.08); margin: 24px 0; }
+  .en { color: #878E97; font-size: 14px; }
+  footer { margin-top: 28px; font-size: 12px; color: #878E97; }
+</style>
+</head>
+<body>
+  <main class="card">
+    <div class="brand">
+      <span class="dot" aria-hidden="true"></span>
+      <h1>Magic Kidney</h1>
+    </div>
+
+    <p class="eyebrow">지원 · Support</p>
+    <p>사진 한 장으로 신장(CKD) 식단을 관리하는 앱, Magic Kidney의 지원 페이지입니다.</p>
+    <p class="en">Support for Magic Kidney — kidney-diet (CKD) tracking from a photo.</p>
+
+    <h2>문의 · Contact</h2>
+    <p>도움이 필요하거나 의견이 있으시면 이메일로 연락 주세요. 보통 1~2일 내 답변드립니다.<br>
+       <span class="en">Questions or feedback? Email us — we usually reply within 1–2 days.</span></p>
+    <a class="mail" href="mailto:jaejung603@gmail.com">jaejung603@gmail.com</a>
+
+    <div class="divider"></div>
+
+    <h2>개인정보 · Privacy</h2>
+    <p>사진과 기록은 기기에만 저장되며 서버에 사진을 올리지 않습니다.<br>
+       <span class="en">Photos and records stay on your device; we never upload your photos.</span></p>
+
+    <div class="divider"></div>
+
+    <p style="font-size:13px;color:#878E97;">
+      본 앱은 AI 추정치를 제공하는 정보·관리 도구이며 의료 자문·진단·치료가 아닙니다. 식단·치료 결정은 담당 의료진과 상의하세요.<br>
+      <span class="en">This app provides AI estimates for informational use only — not medical advice, diagnosis, or treatment.</span>
+    </p>
+
+    <footer>© 2026 Magic Kidney</footer>
+  </main>
+</body>
+</html>
