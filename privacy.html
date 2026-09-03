@@ -52,6 +52,12 @@
   .callout p { color: #7C5012; font-size: 13.5px; margin: 0; }
   footer { margin-top: 32px; font-size: 12px; color: #878E97; }
 </style>
+<style>
+  nav.pages { display:flex; flex-wrap:wrap; gap:14px; margin-top:28px; padding-top:20px;
+    border-top:1px solid rgba(21,23,26,0.08); font-size:13.5px; }
+  nav.pages a { font-weight:700; }
+  nav.pages a[aria-current="page"] { color:#878E97; }
+</style>
 </head>
 <body>
   <main class="card">
@@ -61,75 +67,104 @@
     </div>
 
     <p class="eyebrow">개인정보 처리방침 · Privacy Policy</p>
-    <p class="meta">시행일 · Effective 2026-06-14</p>
+    <p class="meta">시행일 · Effective 2026-09-03</p>
 
-    <p>Magic Kidney(이하 "본 앱")는 만성콩팥병(CKD) 환자의 식단 관리를 돕는 앱입니다. 본 앱은 사용자의 개인정보를 최소한으로만 처리하며, <strong>계정·로그인 없이</strong> 동작합니다.
-      <span class="en">Magic Kidney ("the app") helps people with chronic kidney disease (CKD) manage their diet. The app processes the minimum data necessary and works <strong>without any account or login</strong>.</span>
+    <p>Magic Kidney(이하 "본 앱")는 만성콩팥병(CKD) 환자의 식단 관리를 돕는 앱입니다.
+      <span class="en">Magic Kidney ("the app") helps people with chronic kidney disease (CKD) manage their diet.</span>
     </p>
-
-    <div class="divider"></div>
-
-    <h2>1. 처리하는 정보 · What we process</h2>
-
-    <p><strong>음식 사진 (분석 목적, 미저장)</strong><br>
-      음식 사진을 분석할 때, 해당 사진은 영양소(나트륨·칼륨·인·단백질) 추정을 위해 보안 서버를 거쳐 AI 분석 서비스로 <strong>일시적으로 전송</strong>됩니다. 사진은 분석 직후 처리되며, <strong>당사 서버에 저장하지 않습니다.</strong> 사진은 사용자의 신원과 연결되지 않습니다(계정이 없으므로).
-      <span class="en"><strong>Food photos (for analysis, not stored).</strong> When you analyze a meal, the photo is sent transiently — via a secure server — to an AI service to estimate nutrients (sodium, potassium, phosphorus, protein). Photos are processed for the analysis and <strong>are not stored on our servers</strong>, and are not linked to your identity (there is no account).</span>
-    </p>
-
-    <p><strong>건강·식단 기록 (기기에만 저장)</strong><br>
-      CKD 단계, 체중, 식사 기록, 혈액검사 수치, 메모 등 사용자가 입력한 정보와 촬영한 사진의 사본은 <strong>사용자의 기기에만 저장</strong>됩니다. 이 정보는 당사 서버로 전송되거나 동기화되지 않습니다.
-      <span class="en"><strong>Health & diet records (stored on your device only).</strong> Your CKD stage, weight, meal logs, blood-test values, notes, and saved copies of your photos are stored <strong>only on your device</strong>. This data is not transmitted to or synced with our servers.</span>
-    </p>
-
-    <p><strong>수집하지 않는 것</strong> — 이름·이메일·전화번호 등 식별정보, 위치, 연락처, 광고 식별자를 수집하지 않습니다.
-      <span class="en"><strong>What we don't collect</strong> — no name, email, phone, location, contacts, or advertising identifiers.</span>
-    </p>
-
-    <div class="divider"></div>
-
-    <h2>2. 제3자 서비스 · Third-party services</h2>
-    <p>음식 사진 분석을 위해 다음 서비스를 이용합니다. 전송된 사진은 분석 요청 처리에만 사용됩니다.
-      <span class="en">We use the following services to analyze food photos. Transmitted photos are used only to fulfill the analysis request.</span>
-    </p>
-    <ul>
-      <li><strong>Supabase</strong> — 사진 분석 요청을 중계하는 서버리스 함수(인프라). <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></li>
-      <li><strong>OpenAI / Anthropic</strong> — AI 비전 분석. 해당 API 정책상 전송 데이터는 <strong>모델 학습에 사용되지 않으며</strong>, 악용 방지 모니터링을 위해 단기간만 보관될 수 있습니다. <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener">OpenAI</a> · <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic</a></li>
-    </ul>
-    <p class="en" style="margin-top:0">Supabase relays the analysis request (serverless infrastructure). OpenAI / Anthropic perform the AI vision analysis; under their API policies, transmitted data is <strong>not used to train models</strong> and may be retained only briefly for abuse monitoring.</p>
-
-    <div class="divider"></div>
-
-    <h2>3. 보관 및 삭제 · Retention & deletion</h2>
-    <p>기기에 저장된 모든 기록과 사진은 <strong>앱을 삭제하면 함께 삭제</strong>됩니다. 앱 내에서 개별 식사·사진을 직접 삭제할 수도 있습니다. 분석을 위해 전송된 사진은 당사가 별도로 보관하지 않습니다.
-      <span class="en">All records and photos on your device are <strong>removed when you delete the app</strong>. You can also delete individual meals and photos inside the app. Photos sent for analysis are not retained by us.</span>
-    </p>
-
-    <div class="divider"></div>
-
-    <h2>4. 추적·광고 없음 · No tracking or ads</h2>
-    <p>본 앱은 광고를 게재하지 않고, 사용자를 추적하지 않으며, 분석(트래킹) SDK를 사용하지 않고, 어떤 데이터도 판매하지 않습니다.
-      <span class="en">The app shows no ads, does not track you, uses no analytics/tracking SDKs, and never sells any data.</span>
-    </p>
-
-    <div class="divider"></div>
-
-    <h2>5. 아동 · Children</h2>
-    <p>본 앱은 아동을 대상으로 하지 않으며, 아동의 개인정보를 고의로 수집하지 않습니다.
-      <span class="en">The app is not directed at children and does not knowingly collect children's personal information.</span>
-    </p>
-
-    <div class="divider"></div>
-
-    <h2>6. 변경 및 문의 · Changes & contact</h2>
-    <p>본 방침이 변경되면 이 페이지에 업데이트하고 시행일을 갱신합니다. 문의는 이메일로 연락 주세요.
-      <span class="en">If this policy changes, we will update this page and the effective date. For any questions, email us.</span>
-    </p>
-    <a class="mail" href="mailto:jaejung603@gmail.com">jaejung603@gmail.com</a>
 
     <div class="callout">
+      <p><strong>당신의 건강 데이터는 기본적으로 기기에만 저장됩니다.</strong> 식단 사진·기록·CKD 단계는 기기 로컬에 우선 저장되고, 분석을 위해 일시적으로 전송될 뿐, 동의 없이 보관·공유하지 않습니다.<br>
+      <span style="color:#9A7A46">Your health data stays on your device by default. Photos are sent only briefly for analysis, then deleted — never stored or shared without your consent.</span></p>
+    </div>
+
+    <div class="divider"></div>
+
+    <h2>1. 수집하는 정보 · What we collect</h2>
+    <ul>
+      <li><strong>건강 정보</strong> · CKD 단계, 투석 여부, 자가 설정 한도<span class="en">Health info — CKD stage, dialysis status, your custom limits</span></li>
+      <li><strong>식단 기록</strong> · 음식 사진, 식별 결과, 양·시간·영양소 추정치<span class="en">Meal logs — food photos, identified items, estimates for amount, time, and nutrients</span></li>
+      <li><strong>계정 정보</strong> · 이메일(선택), 닉네임, 언어·단위 설정<span class="en">Account info — email (optional), nickname, language and unit settings</span></li>
+      <li><strong>기기 정보</strong> · OS 버전, 앱 버전, 익명 사용 통계(충돌 진단용)<span class="en">Device info — OS version, app version, anonymous usage stats</span></li>
+    </ul>
+    <p>건강 정보는 「개인정보 보호법」상 민감정보로 분류되어 별도 동의를 받습니다.
+      <span class="en">Health data is treated as sensitive information and collected only with your separate consent.</span></p>
+
+    <div class="divider"></div>
+
+    <h2>2. 이용 목적 · Why we use it</h2>
+    <ul>
+      <li>음식 식별 및 영양소 추정 — 사진 일시 전송 → AI 모델 → <strong>결과 반환 후 즉시 삭제</strong><span class="en">Identify foods and estimate nutrients — photo sent briefly, deleted right after the result returns</span></li>
+      <li>식약처 식품영양성분 DB 매칭 — <strong>외부 전송 없음</strong>, 기기 안에서 검색<span class="en">Matched against the MFDS food database, searched locally and never sent out</span></li>
+      <li>오늘 한도 대비 영향 계산 및 추세 표시<span class="en">Calculate the impact on today\'s limits and show trends</span></li>
+      <li>서비스 개선 — 개인 식별 불가한 통계만 사용<span class="en">Improve the service, using only statistics that cannot identify you</span></li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <h2>3. 로그인과 백업 · Sign-in and backup</h2>
+    <p><strong>로그인은 선택입니다.</strong> 로그인하지 않아도 앱의 모든 기능을 쓸 수 있으며, 그 경우 기록은 기기에만 남습니다.
+      <span class="en"><strong>Signing in is optional.</strong> Every feature works without an account; your records then stay only on your device.</span></p>
+    <p>로그인하면 <strong>기록을 서버에 백업</strong>해 기기를 바꿔도 이어서 쓸 수 있습니다. 로그인 방식은 <strong>Apple 로그인과 Google 로그인</strong> 두 가지이며, 이메일·비밀번호 가입은 없습니다.
+      <span class="en">If you sign in, your records are backed up so you can continue on a new device. We offer Sign in with Apple and Google only — there is no email/password registration.</span></p>
+    <p><strong>식사 사진은 백업하지 않습니다.</strong> 사진은 기기에만 남습니다.
+      <span class="en"><strong>Meal photos are never backed up</strong> — they stay on your device.</span></p>
+
+    <div class="divider"></div>
+
+    <h2>4. 보관 및 삭제 · Retention and deletion</h2>
+    <p>건강·식단 기록은 <strong>계정을 삭제하면 즉시 삭제</strong>합니다. 단, 「전자상거래법」상 의무 보관 항목(주문·결제 기록 5년)은 예외입니다. 로그인하지 않은 경우, 기기에 저장된 기록과 사진은 <strong>앱을 삭제하면 함께 사라집니다.</strong>
+      <span class="en">Health and meal logs are deleted immediately when you delete your account, except records we are legally required to keep (order and payment records, 5 years). If you never signed in, everything is removed when you delete the app.</span></p>
+    <p style="font-size:14px;margin-top:10px;"><a href="delete-account.html">계정 삭제 방법 보기 · How to delete your account →</a></p>
+
+    <div class="divider"></div>
+
+    <h2>5. 제3자 처리 · Third parties</h2>
+    <ul>
+      <li><strong>Supabase</strong> — 인증·데이터베이스 (한국 리전, Row-Level Security 로 사용자 간 격리) <a href="https://supabase.com/privacy" target="_blank" rel="noopener">supabase.com/privacy</a></li>
+      <li><strong>OpenAI / Anthropic</strong> — AI 음식 분석. 해당 API 정책상 전송 데이터는 <strong>모델 학습에 사용되지 않습니다.</strong> <a href="https://openai.com/policies/privacy-policy" target="_blank" rel="noopener">OpenAI</a> · <a href="https://www.anthropic.com/legal/privacy" target="_blank" rel="noopener">Anthropic</a></li>
+      <li><strong>Apple / Google</strong> — 인앱 결제 (결제 정보만 통과)</li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <h2>6. 사용자 권리 · Your rights</h2>
+    <p>본인 정보의 열람·정정·삭제·동의 철회는 언제든 가능합니다. 앱에서 <strong>설정 → 계정</strong> 에서 처리할 수 있고, 앱이 없어도 이메일로 요청할 수 있습니다.
+      <span class="en">You can view, correct, delete your data or withdraw consent at any time — in the app under Settings → Account, or by email if you no longer have the app.</span></p>
+
+    <div class="divider"></div>
+
+    <h2>7. 보안 · Security</h2>
+    <ul>
+      <li>모든 통신은 HTTPS / TLS 1.3 으로 암호화<span class="en">All traffic is encrypted with HTTPS / TLS 1.3</span></li>
+      <li>인증 토큰은 기기 보안 저장소(Keychain / Keystore)에 보관<span class="en">Auth tokens are kept in the device secure storage</span></li>
+      <li>Row-Level Security 로 사용자 간 데이터 격리<span class="en">Row-Level Security keeps each user\'s data isolated</span></li>
+    </ul>
+
+    <div class="divider"></div>
+
+    <h2>8. 추적·광고 없음 · No tracking or ads</h2>
+    <p>본 앱은 광고를 게재하지 않고, 사용자를 추적하지 않으며, 분석(트래킹) SDK 를 사용하지 않고, 어떤 데이터도 판매하지 않습니다.
+      <span class="en">The app shows no ads, does not track you, uses no analytics/tracking SDKs, and never sells any data.</span></p>
+
+    <div class="divider"></div>
+
+    <h2>9. 아동 · Children</h2>
+    <p>만 14세 미만은 본 앱을 이용할 수 없으며, 아동의 개인정보를 고의로 수집하지 않습니다.
+      <span class="en">Children under 14 may not use the app, and we do not knowingly collect children\'s personal information.</span></p>
+
+    <div class="divider"></div>
+
+    <h2>10. 변경 및 문의 · Changes and contact</h2>
+    <p>본 방침이 변경되면 이 페이지에 업데이트하고 시행일을 갱신합니다.
+      <span class="en">If this policy changes, we will update this page and its effective date.</span></p>
+    <a class="mail" href="mailto:magickidney.support@gmail.com">magickidney.support@gmail.com</a>
+
+    <div class="callout" style="margin-top:20px">
       <p>본 앱은 AI 추정치를 제공하는 정보·관리 도구이며 의료 자문·진단·치료가 아닙니다. 식단·치료 결정은 담당 의료진과 상의하세요. · This app provides AI estimates for informational use only — not medical advice, diagnosis, or treatment.</p>
     </div>
 
+    <nav class="pages"><a href="privacy.html" aria-current="page">개인정보 처리방침</a><a href="terms.html">이용약관</a><a href="delete-account.html">계정 삭제</a><a href="support.html">지원</a></nav>
     <footer>© 2026 Magic Kidney</footer>
   </main>
 </body>
