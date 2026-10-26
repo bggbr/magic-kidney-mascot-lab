@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Magic Kidney — 매지 LAB</title>
+  <meta name="description" content="Magic Kidney 마스코트 · 로고 디자인 랩 — 캐릭터 20종 / 로고 24종">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    html,body{height:100%}
+    body{background:#F2F0EA;font-family:'Pretendard Variable',Pretendard,system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+    #boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#A09BBC;font-size:14px;font-weight:700}
+  </style>
+</head>
+<body>
+  <div id="root"><div id="boot">매지 LAB 불러오는 중…</div></div>
+  <noscript><div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;color:#888">JavaScript가 필요합니다.</div></noscript>
+  <script crossorigin src="https://unpkg.com/react@18.3.1/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.25.6/babel.min.js"></script>
+  <script type="text/babel" data-presets="react">
+// Magic Kidney — Mascot + Logo LAB (designer hand-off).
+// Tab 1: 캐릭터 12 styles. Tab 2: 로고 10 options (incl. flipped/inverted versions).
+// Selection persists — designer picks, copies the option name.
+
+const F = "'Pretendard Variable', Pretendard, system-ui, sans-serif";
+const MONO = "'JetBrains Mono', ui-monospace, monospace";
+
+const PAL = {
+  line:'#3A3550', hat:'#6B62C9', hatHi:'#8B82E0', hatBand:'#534AA8',
+  pom:'#F4C84A', spark:'#F4C84A', blush:'#F4A8C0', mouth:'#E0608A', tongue:'#F48BB0',
+  ink:'#2A2740', soft:'#6E698C', faint:'#A09BBC', cardLine:'rgba(42,39,64,0.10)',
+};
+const BODY_COLORS = [
+  ['#C9C4F0','라벤더'], ['#A7D8C4','민트'], ['#F4C6A8','피치'], ['#A8CCEC','스카이'], ['#F0B8D0','로즈'],
+];
+const BGS = [
+  ['paper','#FBFAFF','페이퍼'], ['lav','#EDEAF9','라벤더'], ['dark','#23203A','다크'], ['brand','#6B62C9','브랜드'],
+];
+
+// ── shared face parts ──
+function Eyes({ style, mood, L=78, R=122, EY=128, line=PAL.line, rx=9, ry=12, hi=true, sw=5 }) {
+  const closed = (d) => <path d={d} stroke={line} strokeWidth={sw} fill="none" strokeLinecap="round"/>;
+  if (mood==='sleepy') return <g>{closed(`M${L-9} ${EY} q9 7 18 0`)}{closed(`M${R-9} ${EY} q9 7 18 0`)}</g>;
+  if (mood==='proud')  return <g>{closed(`M${L-9} ${EY+2} q9 -7 18 0`)}{closed(`M${R-9} ${EY+2} q9 -7 18 0`)}</g>;
+  const open = (x)=>(<g><ellipse cx={x} cy={EY} rx={rx} ry={ry} fill={line}/>{hi&&<circle cx={x+rx*0.33} cy={EY-ry*0.33} r={rx*0.36} fill="#FFF"/>}</g>);
+  if (mood==='wink') return <g>{open(L)}{closed(`M${R-9} ${EY+2} q9 6 18 0`)}</g>;
+  return <g>{open(L)}{open(R)}</g>;
+}
+function MouthShape({ mood, line=PAL.line, sw=4.5 }) {
+  if (mood==='sleepy') return <ellipse cx="100" cy="150" rx="5" ry="6" fill={PAL.mouth}/>;
+  if (mood==='surprised') return <ellipse cx="100" cy="152" rx="8" ry="9" fill={PAL.mouth}/>;
+  if (mood==='smile'||mood==='proud') return <path d="M88 150 q12 8 24 0" stroke={line} strokeWidth={sw} fill="none" strokeLinecap="round"/>;
+  return (<g><path d="M88 148 Q100 164 112 148 Q100 158 88 148 Z" fill={line}/><ellipse cx="100" cy="155" rx="5" ry="4" fill={PAL.tongue}/></g>);
+}
+function Spark({ x, y, s=1, c=PAL.spark }) {
+  return <g transform={`translate(${x} ${y}) scale(${s})`}><path d="M0 -9 C1 -3 3 -1 9 0 C3 1 1 3 0 9 C-1 3 -3 1 -9 0 C-3 -1 -1 -3 0 -9 Z" fill={c}/></g>;
+}
+function HatFull() {
+  return <g><path d={HAT_PATH} fill={PAL.hat} stroke={PAL.line} strokeWidth="5" strokeLinejoin="round"/><path d="M70 60 Q100 72 130 60" stroke={PAL.hatBand} strokeWidth="9" fill="none" strokeLinecap="round"/><ellipse cx="106" cy="16" rx="8" ry="8" fill={PAL.pom} stroke={PAL.line} strokeWidth="4"/><path d="M92 26 L100 44" stroke={PAL.hatHi} strokeWidth="4" strokeLinecap="round" opacity="0.7"/></g>;
+}
+const HAT_PATH = "M64 70 Q100 84 136 70 L112 18 Q100 12 100 12 Q100 12 88 18 Z";
+const CUR_BODY = "M100 64 C140 64 162 92 162 130 C162 166 134 184 100 184 C66 184 38 166 38 130 C38 92 60 64 100 64 Z";
+const SK_BODY  = "M100 70 C146 70 166 96 166 134 C166 168 138 184 100 184 C62 184 34 168 34 134 C34 96 54 70 100 70 Z";
+function px(c, r, w, h, fill) { return <rect key={`${c}-${r}-${fill}`} x={c*10} y={r*10} width={w*10} height={h*10} fill={fill}/>; }
+
+// ── the character, 12 styles ──
+function Wiz({ size=160, style='current', mood='happy', hat=true, body='#C9C4F0', sparkle=true, onDark=false }) {
+  const uid = React.useId().replace(/[:]/g,'');
+  const line = style==='line' ? (onDark ? '#FFFFFF' : PAL.line) : PAL.line;
+
+  if (style==='pixel') {
+    const B=body, H=PAL.hat, D=PAL.line, P2=PAL.blush, M=PAL.mouth, Y=PAL.pom;
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" shapeRendering="crispEdges">
+        {hat && <g>{px(9,1,2,1,Y)}{px(9,2,2,2,H)}{px(8,4,4,1,H)}{px(7,5,6,1,H)}{px(6,6,8,1,D)}</g>}
+        {px(7,7,6,1,B)}{px(6,8,8,1,B)}{px(5,9,10,1,B)}{px(4,10,12,7,B)}{px(5,17,10,1,B)}
+        {mood==='sleepy'||mood==='proud'
+          ? <g>{px(7,12,2,0.6,D)}{px(11,12,2,0.6,D)}</g>
+          : <g>{px(7,11,1.6,2,D)}{mood!=='wink'&&px(11.4,11,1.6,2,D)}{mood==='wink'&&px(11.4,12,1.6,0.6,D)}</g>}
+        {px(5.4,14,1.6,1,P2)}{px(13,14,1.6,1,P2)}
+        {mood==='surprised' ? px(9.4,14,1.4,1.4,M) : px(9,14.4,2,1,M)}
+        {sparkle && <g>{px(2.4,8,1,1,Y)}{px(16.6,7,1,1,Y)}</g>}
+      </svg>
+    );
+  }
+  if (style==='retro') {
+    const cream='#F2E9D5', ink='#26221B';
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <path d={CUR_BODY} fill={cream} stroke={ink} strokeWidth="6"/>
+        {hat && <g><path d={HAT_PATH} fill={ink}/><circle cx="106" cy="16" r="8" fill={cream} stroke={ink} strokeWidth="5"/></g>}
+        {mood==='sleepy'||mood==='proud'
+          ? <g><path d="M69 128 q9 7 18 0" stroke={ink} strokeWidth="5" fill="none" strokeLinecap="round"/><path d="M113 128 q9 7 18 0" stroke={ink} strokeWidth="5" fill="none" strokeLinecap="round"/></g>
+          : <g>
+              <path d="M78 116 A12 12 0 1 0 78.01 116 Z M78 128 L78 114 A12 12 0 0 1 89 122 Z" fill={ink} fillRule="evenodd"/>
+              {mood!=='wink'
+                ? <path d="M122 116 A12 12 0 1 0 122.01 116 Z M122 128 L122 114 A12 12 0 0 1 133 122 Z" fill={ink} fillRule="evenodd"/>
+                : <path d="M113 128 q9 6 18 0" stroke={ink} strokeWidth="5" fill="none" strokeLinecap="round"/>}
+            </g>}
+        {mood==='surprised'
+          ? <ellipse cx="100" cy="152" rx="8" ry="10" fill={ink}/>
+          : <path d="M84 148 q16 14 32 0" stroke={ink} strokeWidth="5" fill="none" strokeLinecap="round"/>}
+        <g stroke={ink} strokeWidth="2" opacity="0.6"><path d="M60 144 l8 6M64 142 l8 6"/><path d="M132 144 l8 6M136 142 l8 6"/></g>
+        {sparkle && <g fill={ink}><Spark x={36} y={84} c={ink} s={0.8}/><Spark x={166} y={80} c={ink} s={0.9}/></g>}
+      </svg>
+    );
+  }
+  if (style==='clay') {
+    const dark = '#00000022', lite='#FFFFFF55';
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <ellipse cx="100" cy="190" rx="56" ry="9" fill={PAL.ink} opacity="0.15"/>
+        <path d="M100 66 C138 62 164 94 161 132 C158 168 132 186 99 184 C65 182 37 164 39 128 C41 94 62 70 100 66 Z" fill={body}/>
+        <path d="M52 150 C66 174 134 176 150 148 C140 170 64 172 52 150 Z" fill={dark}/>
+        <ellipse cx="74" cy="98" rx="22" ry="15" fill={lite}/>
+        {hat && <g>
+          <path d="M66 72 Q100 86 134 70 L114 22 Q101 14 99 15 Q98 15 87 22 Z" fill={PAL.hat}/>
+          <path d="M70 66 Q100 78 130 64 L128 60 Q100 72 72 62 Z" fill="#00000026"/>
+          <circle cx="107" cy="18" r="9" fill={PAL.pom}/>
+          <ellipse cx="104" cy="15" rx="3.5" ry="2.5" fill="#FFFFFF66"/>
+        </g>}
+        <Eyes style={style} mood={mood} rx={7.5} ry={9} sw={6}/>
+        <MouthShape mood={mood} sw={5}/>
+        <ellipse cx="66" cy="146" rx="10" ry="6" fill={PAL.blush} opacity="0.8"/>
+        <ellipse cx="134" cy="146" rx="10" ry="6" fill={PAL.blush} opacity="0.8"/>
+      </svg>
+    );
+  }
+  if (style==='kawaii') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <path d="M100 58 C146 58 168 92 168 132 C168 170 138 188 100 188 C62 188 32 170 32 132 C32 92 54 58 100 58 Z" fill={body}/>
+        <ellipse cx="100" cy="152" rx="40" ry="28" fill="#FFFFFF" opacity="0.75"/>
+        {hat && <g><path d="M70 64 Q100 76 130 64 L110 22 Q100 16 100 16 Q100 16 90 22 Z" fill={PAL.hat}/><circle cx="104" cy="19" r="6.5" fill={PAL.pom}/></g>}
+        {mood==='sleepy'||mood==='proud'
+          ? <g><path d="M62 124 q7 5 14 0" stroke={PAL.line} strokeWidth="4" fill="none" strokeLinecap="round"/><path d="M124 124 q7 5 14 0" stroke={PAL.line} strokeWidth="4" fill="none" strokeLinecap="round"/></g>
+          : <g><ellipse cx="69" cy="124" rx="5" ry="7" fill={PAL.line}/>{mood!=='wink' ? <ellipse cx="131" cy="124" rx="5" ry="7" fill={PAL.line}/> : <path d="M124 124 q7 5 14 0" stroke={PAL.line} strokeWidth="4" fill="none" strokeLinecap="round"/>}</g>}
+        {mood==='surprised' ? <ellipse cx="100" cy="138" rx="5" ry="6" fill={PAL.mouth}/> : <path d="M94 136 q6 5 12 0" stroke={PAL.line} strokeWidth="3.5" fill="none" strokeLinecap="round"/>}
+        <ellipse cx="56" cy="136" rx="9" ry="6" fill={PAL.blush} opacity="0.85"/>
+        <ellipse cx="144" cy="136" rx="9" ry="6" fill={PAL.blush} opacity="0.85"/>
+        {sparkle && <><Spark x={34} y={78} s={0.8}/><Spark x={168} y={74}/></>}
+      </svg>
+    );
+  }
+  if (style==='papercut') {
+    const shadow='#00000030';
+    const bodyPoly = "M100 66 L146 80 L162 128 L146 172 L100 184 L54 172 L38 128 L54 80 Z";
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <path d={bodyPoly} fill={shadow} transform="translate(6 7)"/>
+        <path d={bodyPoly} fill={body}/>
+        <path d="M100 66 L146 80 L162 128 L100 120 Z" fill="#FFFFFF" opacity="0.25"/>
+        {hat && <g><path d="M66 72 L134 68 L112 20 L88 22 Z" fill={shadow} transform="translate(5 5)"/><path d="M66 72 L134 68 L112 20 L88 22 Z" fill={PAL.hat}/><circle cx="104" cy="18" r="8" fill={PAL.pom}/></g>}
+        <Eyes style={style} mood={mood} rx={8} ry={10} hi={false} sw={5}/>
+        <MouthShape mood={mood} sw={4.5}/>
+        <path d="M58 142 L76 148 L58 152 Z" fill={PAL.blush} opacity="0.8"/>
+        <path d="M142 142 L124 148 L142 152 Z" fill={PAL.blush} opacity="0.8"/>
+        {sparkle && <><Spark x={34} y={80}/><Spark x={168} y={76} s={1.1}/></>}
+      </svg>
+    );
+  }
+  if (style==='pop') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <defs><pattern id={`${uid}ht`} width="9" height="9" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r="1.7" fill={PAL.line} opacity="0.25"/></pattern></defs>
+        <path d={CUR_BODY} fill={body} stroke={PAL.line} strokeWidth="9"/>
+        <path d="M48 130 C48 160 70 178 100 178 C130 178 152 160 152 130 L152 142 C148 168 128 182 100 182 C72 182 52 168 48 142 Z" fill={`url(#${uid}ht)`}/>
+        <ellipse cx="74" cy="100" rx="18" ry="12" fill="#FFF" opacity="0.7"/>
+        {hat && <g><path d={HAT_PATH} fill={PAL.hat} stroke={PAL.line} strokeWidth="9" strokeLinejoin="round"/><circle cx="106" cy="16" r="9" fill={PAL.pom} stroke={PAL.line} strokeWidth="6"/></g>}
+        <Eyes style={style} mood={mood} rx={10} ry={13} sw={6}/>
+        <MouthShape mood={mood} sw={5.5}/>
+        <ellipse cx="64" cy="146" rx="11" ry="7" fill={PAL.blush}/>
+        <ellipse cx="136" cy="146" rx="11" ry="7" fill={PAL.blush}/>
+        {sparkle && <path d="M168 66 L173 78 L186 80 L176 88 L179 101 L168 94 L157 101 L160 88 L150 80 L163 78 Z" fill={PAL.pom} stroke={PAL.line} strokeWidth="4" strokeLinejoin="round"/>}
+      </svg>
+    );
+  }
+
+
+  if (style==='jelly') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <defs><radialGradient id={uid+'j'} cx="0.4" cy="0.32" r="0.85"><stop offset="0" stopColor="#FFFFFF" stopOpacity="0.9"/><stop offset="0.4" stopColor={body} stopOpacity="0.95"/><stop offset="1" stopColor="#B3ACEC"/></radialGradient></defs>
+        {sparkle && <><Spark x={168} y={78} s={1.1}/><Spark x={34} y={90}/></>}
+        <path d={CUR_BODY} fill={`url(#${uid}j)`} stroke="#B3ACEC" strokeWidth="3" strokeOpacity="0.6"/>
+        <path d="M52 150 C70 176 130 176 148 150 C140 172 60 172 52 150 Z" fill="#9A91D9" opacity="0.35"/>
+        <ellipse cx="80" cy="100" rx="26" ry="18" fill="#FFFFFF" opacity="0.75"/>
+        <circle cx="120" cy="96" r="6" fill="#FFFFFF" opacity="0.9"/>
+        {hat && <HatFull/>}
+        <Eyes style={style} mood={mood}/><MouthShape mood={mood}/>
+        <ellipse cx="66" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.55"/><ellipse cx="134" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.55"/>
+      </svg>
+    );
+  }
+  if (style==='gradient') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <defs>
+          <linearGradient id={uid+'g'} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#CFC5F2"/><stop offset="0.5" stopColor="#B8D6E8"/><stop offset="1" stopColor="#F4C6C0"/></linearGradient>
+          <linearGradient id={uid+'gh'} x1="0" y1="0" x2="0" y2="1"><stop offset="0" stopColor="#8B82E0"/><stop offset="1" stopColor="#6B62C9"/></linearGradient></defs>
+        {sparkle && <><Spark x={168} y={80} s={1.1}/><Spark x={36} y={88}/></>}
+        <path d={CUR_BODY} fill={`url(#${uid}g)`}/>
+        <ellipse cx="84" cy="98" rx="30" ry="18" fill="#FFFFFF" opacity="0.28"/>
+        {hat && <g><path d={HAT_PATH} fill={`url(#${uid}gh)`}/><ellipse cx="106" cy="16" rx="8" ry="8" fill={PAL.pom}/></g>}
+        <Eyes style={style} mood={mood}/><MouthShape mood={mood}/>
+        <ellipse cx="66" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.6"/><ellipse cx="134" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.6"/>
+      </svg>
+    );
+  }
+  if (style==='mochi') {
+    const R="M100 74 C150 74 174 100 174 134 C174 166 142 184 100 184 C58 184 26 166 26 134 C26 100 50 74 100 74 Z";
+    const dust=[[70,98,2],[88,90,1.6],[112,92,1.8],[130,100,2],[78,112,1.5],[122,110,1.6],[100,86,1.7],[150,118,1.6],[52,120,1.5]];
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <ellipse cx="100" cy="192" rx="58" ry="9" fill={PAL.ink} opacity="0.10"/>
+        <path d={R} fill="#E0DBF7"/><path d={R} fill="none" stroke="#C3BBEE" strokeWidth="3"/>
+        <path d="M44 158 C64 180 136 180 156 158 C148 176 52 176 44 158 Z" fill="#CFC8F0" opacity="0.55"/>
+        {dust.map(([x,y,r],i)=><circle key={i} cx={x} cy={y} r={r} fill="#FFFFFF" opacity="0.9"/>)}
+        {hat && <g><path d="M76 70 Q100 82 124 70 L110 30 Q100 24 100 24 Q100 24 90 30 Z" fill={PAL.hat}/><circle cx="104" cy="26" r="6.5" fill={PAL.pom}/></g>}
+        <Eyes style={style} mood={mood} rx={5.5} ry={7.5} EY={130}/>
+        {mood==='surprised' ? <ellipse cx="100" cy="150" rx="6" ry="7" fill={PAL.mouth}/> : <path d="M92 148 q8 7 16 0" stroke={PAL.line} strokeWidth="3.5" fill="none" strokeLinecap="round"/>}
+        <ellipse cx="68" cy="148" rx="10" ry="6.5" fill={PAL.blush} opacity="0.8"/><ellipse cx="132" cy="148" rx="10" ry="6.5" fill={PAL.blush} opacity="0.8"/>
+      </svg>
+    );
+  }
+  if (style==='water') {
+    const dots=[[72,112],[118,104],[92,152],[138,128],[64,132],[108,158]];
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <defs><radialGradient id={uid+'w'} cx="0.42" cy="0.35" r="0.8"><stop offset="0" stopColor="#E4E0F7"/><stop offset="0.6" stopColor={body}/><stop offset="1" stopColor="#AFA7E0"/></radialGradient></defs>
+        <path d={CUR_BODY} fill={`url(#${uid}w)`}/>
+        <path d="M44 134 C58 178 142 178 156 134 C150 170 128 182 100 182 C72 182 50 170 44 134 Z" fill="#9087CE" opacity="0.32"/>
+        <path d="M70 86 C92 78 120 80 138 92 C120 86 92 86 70 96 Z" fill="#FFFFFF" opacity="0.4"/>
+        <path d={CUR_BODY} fill="none" stroke="#7E76B8" strokeWidth="2" strokeOpacity="0.4"/>
+        <g fill="#5F5896" opacity="0.16">{dots.map(([x,y],i)=><circle key={i} cx={x} cy={y} r="1.1"/>)}</g>
+        {hat && <g><path d={HAT_PATH} fill={PAL.hat} fillOpacity="0.85"/><circle cx="106" cy="16" r="7" fill={PAL.pom} fillOpacity="0.92"/></g>}
+        <Eyes style={style} mood={mood}/><MouthShape mood={mood}/>
+        <ellipse cx="66" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.5"/><ellipse cx="134" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.5"/>
+      </svg>
+    );
+  }
+  if (style==='aura') {
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <defs><radialGradient id={uid+'a'} cx="0.5" cy="0.5" r="0.5"><stop offset="0" stopColor={PAL.hatHi} stopOpacity="0.5"/><stop offset="0.7" stopColor={PAL.hatHi} stopOpacity="0.12"/><stop offset="1" stopColor={PAL.hatHi} stopOpacity="0"/></radialGradient></defs>
+        <circle cx="100" cy="124" r="92" fill={`url(#${uid}a)`}/>
+        <circle cx="100" cy="124" r="78" fill="none" stroke={PAL.pom} strokeWidth="1.5" strokeOpacity="0.35" strokeDasharray="2 7"/>
+        {sparkle && <><Spark x={170} y={70} s={1.2}/><Spark x={30} y={86}/><Spark x={150} y={170} s={0.8}/><Spark x={46} y={158} s={0.9}/><Spark x={178} y={128} s={0.7}/></>}
+        <path d={CUR_BODY} fill={body} stroke={PAL.line} strokeWidth="5"/>
+        <ellipse cx="78" cy="104" rx="20" ry="14" fill="#FFF" opacity="0.3"/>
+        {hat && <HatFull/>}
+        <Eyes style={style} mood={mood}/><MouthShape mood={mood}/>
+        <ellipse cx="66" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.7"/><ellipse cx="134" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.7"/>
+      </svg>
+    );
+  }
+  if (style==='neon') {
+    const g='#7DF5C4', p='#C9A0FF';
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <defs><filter id={uid+'n'} x="-40%" y="-40%" width="180%" height="180%"><feGaussianBlur stdDeviation="3.4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>
+        <g filter={`url(#${uid}n)`} fill="none" strokeLinecap="round" strokeLinejoin="round">
+          <path d={CUR_BODY} stroke={g} strokeWidth="3.5"/>
+          {hat && <><path d={HAT_PATH} stroke={p} strokeWidth="3.5"/><circle cx="106" cy="16" r="7" stroke={PAL.pom} strokeWidth="3"/></>}
+          {mood==='sleepy'||mood==='proud'
+            ? <><path d="M69 128 q9 7 18 0" stroke={g} strokeWidth="3"/><path d="M113 128 q9 7 18 0" stroke={g} strokeWidth="3"/></>
+            : <><ellipse cx="78" cy="128" rx="6" ry="9" stroke={g} strokeWidth="3"/>{mood!=='wink' ? <ellipse cx="122" cy="128" rx="6" ry="9" stroke={g} strokeWidth="3"/> : <path d="M113 128 q9 6 18 0" stroke={g} strokeWidth="3"/>}</>}
+          <path d={mood==='surprised' ? "M92 150 a8 8 0 1 0 16 0 a8 8 0 1 0 -16 0" : "M88 150 q12 9 24 0"} stroke={g} strokeWidth="3"/>
+          {sparkle && <><Spark x={170} y={78} s={1.2} c={p}/><Spark x={34} y={92} c={g}/></>}
+        </g>
+      </svg>
+    );
+  }
+  if (style==='riso') {
+    const pink='#F2789F', blue='#8AA0F0';
+    const grain=[]; for(let x=46;x<160;x+=11) for(let y=78;y<182;y+=11) grain.push([x,y]);
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <g style={{mixBlendMode:'multiply'}}><path d={CUR_BODY} fill={pink} fillOpacity="0.85" transform="translate(-5 4)"/>{hat && <path d={HAT_PATH} fill={pink} fillOpacity="0.85" transform="translate(-5 4)"/>}</g>
+        <g style={{mixBlendMode:'multiply'}}><path d={CUR_BODY} fill={blue} fillOpacity="0.7" transform="translate(5 -2)"/>{hat && <path d={HAT_PATH} fill={blue} fillOpacity="0.7" transform="translate(5 -2)"/>}</g>
+        <g fill={PAL.ink} opacity="0.18">{grain.map(([x,y],i)=><circle key={i} cx={x} cy={y} r="1.1"/>)}</g>
+        <Eyes style={style} mood={mood}/><MouthShape mood={mood}/>
+        {hat && <circle cx="106" cy="16" r="7" fill={PAL.pom}/>}
+      </svg>
+    );
+  }
+  if (style==='knit') {
+    const field=(x0,x1,y0,y1,c)=>{const a=[];for(let y=y0;y<y1;y+=11)for(let x=x0;x<x1;x+=11)a.push(<path key={`${x}-${y}`} d={`M${x} ${y} l5 6 l5 -6`} stroke={c} strokeWidth="2.2" fill="none" strokeLinecap="round" opacity="0.7"/>);return a;};
+    return (
+      <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+        <clipPath id={uid+'kb'}><path d={CUR_BODY}/></clipPath>
+        <clipPath id={uid+'kh'}><path d={HAT_PATH}/></clipPath>
+        <path d={CUR_BODY} fill={body}/>
+        <g clipPath={`url(#${uid}kb)`}>{field(48,156,86,180,'#A79FE0')}</g>
+        <path d={CUR_BODY} fill="none" stroke={PAL.line} strokeWidth="5" strokeLinejoin="round"/>
+        {hat && <><path d={HAT_PATH} fill={PAL.hat}/><g clipPath={`url(#${uid}kh)`}>{field(70,134,18,72,'#8B82E0')}</g><path d={HAT_PATH} fill="none" stroke={PAL.line} strokeWidth="5" strokeLinejoin="round"/><circle cx="106" cy="16" r="8" fill={PAL.pom} stroke={PAL.line} strokeWidth="3.5"/></>}
+        <Eyes style={style} mood={mood} rx={7} ry={7} hi={true}/><MouthShape mood={mood}/>
+        <ellipse cx="66" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.7"/><ellipse cx="134" cy="146" rx="11" ry="7" fill={PAL.blush} opacity="0.7"/>
+      </svg>
+    );
+  }
+
+  const bodyPath = style==='sketch' ? SK_BODY : CUR_BODY;
+  const noOutline = style==='simple' || style==='soft3d';
+  const lw = style==='sketch' ? 7 : 5;
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+      {style==='soft3d' && <defs><radialGradient id={`${uid}b`} cx="0.38" cy="0.3" r="1"><stop offset="0" stopColor="#FFFFFF"/><stop offset="0.35" stopColor={body}/><stop offset="1" stopColor={body}/></radialGradient></defs>}
+      {style==='soft3d' && <ellipse cx="100" cy="188" rx="52" ry="8" fill={PAL.ink} opacity="0.12"/>}
+      {sparkle && style!=='line' && <><Spark x={36} y={86}/><Spark x={168} y={78} s={1.2}/><Spark x={158} y={120} s={0.8}/></>}
+      {style==='sticker' && <path d={bodyPath} stroke="#FFFFFF" strokeWidth="22" fill="#FFFFFF"/>}
+      {style==='sticker' && hat && <path d={HAT_PATH} stroke="#FFFFFF" strokeWidth="22" fill="#FFFFFF"/>}
+      <path d={bodyPath}
+        fill={style==='line' ? 'none' : style==='soft3d' ? `url(#${uid}b)` : body}
+        stroke={noOutline ? 'none' : line} strokeWidth={lw}/>
+      {(style==='current'||style==='sticker') && <ellipse cx="78" cy="104" rx="20" ry="14" fill="#FFF" opacity="0.35"/>}
+      {style==='soft3d' && <ellipse cx="74" cy="100" rx="24" ry="16" fill="#FFF" opacity="0.5"/>}
+      {hat && (style==='line'
+        ? <g><path d={HAT_PATH} stroke={line} strokeWidth={lw} fill="none" strokeLinejoin="round"/><circle cx="106" cy="16" r="7" stroke={line} strokeWidth="4" fill="none"/></g>
+        : style==='simple'
+        ? <g><path d={HAT_PATH} fill={PAL.hat}/><ellipse cx="106" cy="16" rx="7.5" ry="7.5" fill={PAL.pom}/></g>
+        : style==='soft3d'
+        ? <g><path d={HAT_PATH} fill={PAL.hat}/><path d="M92 24 L102 48" stroke={PAL.hatHi} strokeWidth="6" strokeLinecap="round" opacity="0.8"/><ellipse cx="106" cy="16" rx="8" ry="8" fill={PAL.pom}/></g>
+        : style==='sketch'
+        ? <g><ellipse cx="100" cy="68" rx="44" ry="13" fill={PAL.hat} stroke={line} strokeWidth="6"/><path d="M76 64 Q100 4 124 64 Z" fill={PAL.hat} stroke={line} strokeWidth="6" strokeLinejoin="round"/><circle cx="100" cy="14" r="8" fill={PAL.pom} stroke={line} strokeWidth="4.5"/></g>
+        : <g><path d={HAT_PATH} fill={PAL.hat} stroke={line} strokeWidth="5" strokeLinejoin="round"/><path d="M70 60 Q100 72 130 60" stroke={PAL.hatBand} strokeWidth="9" fill="none" strokeLinecap="round"/><ellipse cx="106" cy="16" rx="8" ry="8" fill={PAL.pom} stroke={line} strokeWidth="4"/><path d="M92 26 L100 44" stroke={PAL.hatHi} strokeWidth="4" strokeLinecap="round" opacity="0.7"/></g>)}
+      {style==='line'
+        ? <g><Eyes style={style} mood={mood} line={line}/><path d="M88 150 q12 8 24 0" stroke={line} strokeWidth="4.5" fill="none" strokeLinecap="round"/></g>
+        : <g><Eyes style={style} mood={mood} rx={style==='simple'||style==='soft3d'?6.5:9} ry={style==='simple'||style==='soft3d'?8:12} hi={style!=='simple'&&style!=='soft3d'}/><MouthShape mood={mood}/></g>}
+      {style!=='line' && <><ellipse cx="66" cy="146" rx="11" ry="7" fill={PAL.blush} opacity={style==='simple'?0.9:0.7}/><ellipse cx="134" cy="146" rx="11" ry="7" fill={PAL.blush} opacity={style==='simple'?0.9:0.7}/></>}
+    </svg>
+  );
+}
+
+// ════════════════ LOGO OPTIONS ════════════════
+const LG = { ink:'#16181C', green:'#1F7A52', greenLite:'#5FC892', amber:'#D6952F', amberLite:'#EFD9A8', paper:'#EFEBE1' };
+
+// L1 — 한도 게이지 (확정 후보: 사발 호 + 270° 링 + 점)
+function LogoGauge({ size=96, ink=LG.ink, accent=LG.green, flip=false }) {
+  const cx=50, cy=52, R=27, sw=9, Cc=2*Math.PI*R;
+  return (
+    <svg width={size} height={size} viewBox="0 0 100 100" fill="none">
+      <g transform={flip ? 'translate(0 100) scale(1 -1)' : undefined}>
+        <circle cx={cx} cy={cy} r={R} fill="none" stroke={accent} strokeWidth={sw}
+          strokeLinecap="round" strokeDasharray={`${Cc*0.72} ${Cc}`} transform={`rotate(-218 ${cx} ${cy})`}/>
+        <path d={`M${cx-38} ${cy+2} A38 38 0 0 0 ${cx+38} ${cy+2}`} fill="none" stroke={ink} strokeWidth={sw} strokeLinecap="round"/>
+        <circle cx={cx} cy={cy-R} r={sw/2-0.5} fill={ink}/>
+      </g>
+    </svg>
+  );
+}
+// L4 — 비대칭 사발 (icon 01)
+function LogoBowl({ size=96, c=LG.ink, flip=false }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+      <g transform={flip ? 'translate(0 120) scale(1 -1)' : undefined}>
+        <path d="M24 56 H92 V60 A34 34 0 0 1 24 60 Z" fill={c}/>
+        <circle cx="48" cy="40" r="8" fill={c}/><circle cx="66" cy="34" r="6.5" fill={c}/><circle cx="80" cy="44" r="5" fill={c}/>
+      </g>
+    </svg>
+  );
+}
+// L6 — 채운 사발 (음각 4점)
+function LogoFilled({ size=96, c=LG.ink, bg='#FFFFFF' }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+      <path d="M24 46 H96 V52 A36 38 0 0 1 24 52 Z" fill={c}/>
+      {[[60,56],[46,68],[74,68],[60,80]].map(([x,y],i)=><circle key={i} cx={x} cy={y} r="7.5" fill={bg}/>)}
+      <rect x="40" y="98" width="40" height="8" rx="4" fill={c}/>
+    </svg>
+  );
+}
+// L8 — 매지 실루엣 (캐릭터=로고)
+function LogoMagi({ size=96, c=LG.ink, bg='#FFFFFF', accent=LG.amber }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+      <path d={CUR_BODY} fill={c}/>
+      <path d={HAT_PATH} fill={c}/>
+      <circle cx="106" cy="16" r="8" fill={accent}/>
+      <ellipse cx="78" cy="128" rx="8" ry="11" fill={bg}/>
+      <ellipse cx="122" cy="128" rx="8" ry="11" fill={bg}/>
+      <path d="M88 150 q12 9 24 0" stroke={bg} strokeWidth="6" fill="none" strokeLinecap="round"/>
+    </svg>
+  );
+}
+// L9 — 모자 마크 (마법사 모자 + 스파크)
+function LogoHat({ size=96, c=LG.ink, accent=LG.amber }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+      <path d="M52 152 Q100 172 148 152 L116 54 Q100 44 100 44 Q100 44 84 54 Z" fill={c}/>
+      <circle cx="112" cy="48" r="11" fill={accent}/>
+      <Spark x={44} y={92} s={1.4} c={accent}/>
+      <Spark x={160} y={110} s={1.1} c={accent}/>
+    </svg>
+  );
+}
+// L10 — 4점 링 + 받침
+function LogoRing4({ size=96, c=LG.ink, accent=LG.green }) {
+  const R=26, cx=60, cy=50;
+  const pts=[0,1,2,3].map(i=>{const a=-Math.PI/2+i*Math.PI/2;return [cx+R*Math.cos(a),cy+R*Math.sin(a)];});
+  return (
+    <svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+      <circle cx={cx} cy={cy} r={R} stroke={c} strokeWidth="3" opacity="0.25" fill="none"/>
+      {pts.map(([x,y],i)=><circle key={i} cx={x} cy={y} r="7.5" fill={i===0?accent:c}/>)}
+      <path d="M34 98 Q60 110 86 98" stroke={c} strokeWidth="8" strokeLinecap="round" fill="none"/>
+    </svg>
+  );
+}
+// L7 — 워드마크
+function LogoWord({ scale=1, c=LG.ink, accent=LG.amber }) {
+  return (
+    <div style={{ fontFamily:F, fontWeight:900, fontSize:26*scale, letterSpacing:-1.2*scale, color:c, lineHeight:1 }}>
+      magickidney<span style={{ color:accent }}>.</span>
+    </div>
+  );
+}
+
+// ── 추가 로고 L11~L24 ──
+function LogoSpoon({ size=96, c=LG.ink, accent=LG.amber }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <ellipse cx="60" cy="42" rx="21" ry="25" fill="none" stroke={c} strokeWidth="8"/>
+    <rect x="55" y="68" width="10" height="38" rx="5" fill={c}/>
+    <circle cx="60" cy="42" r="8" fill={accent}/>
+  </svg>);
+}
+function LogoChop({ size=96, c=LG.ink, accent=LG.green }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <path d="M22 66 H98 V70 A38 34 0 0 1 22 70 Z" fill={c}/>
+    <rect x="36" y="12" width="6" height="54" rx="3" fill={c} transform="rotate(16 39 39)"/>
+    <rect x="54" y="10" width="6" height="54" rx="3" fill={c} transform="rotate(6 57 37)"/>
+    <circle cx="78" cy="56" r="6" fill={accent}/>
+  </svg>);
+}
+function LogoDrop({ size=96, c=LG.ink, accent=LG.green }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <path d="M60 12 C74 36 92 50 92 72 C92 93 78 106 60 106 C42 106 28 93 28 72 C28 50 46 36 60 12 Z" fill="none" stroke={c} strokeWidth="8"/>
+    <circle cx="60" cy="74" r="14" fill="none" stroke={accent} strokeWidth="7" strokeLinecap="round" strokeDasharray="63 88" transform="rotate(-218 60 74)"/>
+  </svg>);
+}
+function LogoLeaf({ size=96, c=LG.ink, accent=LG.green }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <path d="M18 62 C40 94 80 94 102 62 C80 76 40 76 18 62 Z" fill={accent}/>
+    <circle cx="60" cy="42" r="9" fill={c}/>
+  </svg>);
+}
+function LogoSmile({ size=96, c=LG.ink, accent=LG.amber }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <path d="M26 64 A34 34 0 0 0 94 64" stroke={c} strokeWidth="9" strokeLinecap="round" fill="none"/>
+    <circle cx="44" cy="44" r="7" fill={c}/>
+    <circle cx="76" cy="44" r="7" fill={c}/>
+    <circle cx="97" cy="64" r="5" fill={accent}/>
+  </svg>);
+}
+function LogoFlow({ size=96, c=LG.ink, accent=LG.green }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <circle cx="60" cy="60" r="42" stroke={c} strokeWidth="8" fill="none"/>
+    <path d="M60 18 C40 38 80 50 60 60 C40 70 80 82 60 102" stroke={accent} strokeWidth="7" fill="none" strokeLinecap="round"/>
+  </svg>);
+}
+function LogoMoon({ size=96, c=LG.ink, accent=LG.amber }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <path d="M44 16 A44 44 0 1 0 102 74 A34 34 0 0 1 44 16 Z" fill={c}/>
+    <circle cx="80" cy="38" r="9" fill={accent}/>
+  </svg>);
+}
+function LogoEcho({ size=96, c=LG.ink, accent=LG.green }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <path d="M22 46 A38 38 0 0 0 98 46" stroke={c} strokeWidth="8" strokeLinecap="round" fill="none"/>
+    <path d="M34 62 A26 26 0 0 0 86 62" stroke={c} strokeWidth="8" strokeLinecap="round" fill="none" opacity="0.55"/>
+    <path d="M46 78 A14 14 0 0 0 74 78" stroke={accent} strokeWidth="8" strokeLinecap="round" fill="none"/>
+  </svg>);
+}
+function LogoSteam({ size=96, c=LG.ink, accent=LG.green }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <path d="M24 66 H96 V70 A36 32 0 0 1 24 70 Z" fill={c}/>
+    <path d="M60 50 C50 42 70 34 60 24" stroke={accent} strokeWidth="7" fill="none" strokeLinecap="round"/>
+  </svg>);
+}
+function LogoPixelBowl({ size=96, c=LG.ink, accent=LG.amber }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" shapeRendering="crispEdges" fill="none">
+    <rect x="20" y="50" width="80" height="10" fill={c}/>
+    <rect x="28" y="60" width="64" height="10" fill={c}/>
+    <rect x="36" y="70" width="48" height="10" fill={c}/>
+    <rect x="48" y="80" width="24" height="10" fill={c}/>
+    <rect x="44" y="32" width="10" height="10" fill={accent}/>
+    <rect x="66" y="24" width="10" height="10" fill={c}/>
+  </svg>);
+}
+function LogoHatRing({ size=96, c=LG.ink, accent=LG.green }) {
+  return (<svg width={size} height={size} viewBox="0 0 200 200" fill="none">
+    <path d="M52 152 Q100 172 148 152 L116 54 Q100 44 100 44 Q100 44 84 54 Z" fill={c}/>
+    <path d="M62 124 Q100 140 138 124" stroke={accent} strokeWidth="10" fill="none" strokeLinecap="round"/>
+    <circle cx="112" cy="48" r="11" fill={accent}/>
+  </svg>);
+}
+function LogoGrain({ size=96, c=LG.ink, accent=LG.amber }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <ellipse cx="40" cy="56" rx="9" ry="14" fill={c} transform="rotate(-18 40 56)"/>
+    <ellipse cx="62" cy="48" rx="9" ry="14" fill={accent}/>
+    <ellipse cx="84" cy="56" rx="9" ry="14" fill={c} transform="rotate(18 84 56)"/>
+    <path d="M30 84 Q62 98 94 84" stroke={c} strokeWidth="8" fill="none" strokeLinecap="round"/>
+  </svg>);
+}
+function LogoDia({ size=96, c=LG.ink, accent=LG.green }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <circle cx="60" cy="34" r="9" fill={accent}/>
+    <circle cx="34" cy="60" r="9" fill={c}/>
+    <circle cx="86" cy="60" r="9" fill={c}/>
+    <circle cx="60" cy="86" r="9" fill={c}/>
+  </svg>);
+}
+function LogoSparkRing({ size=96, c=LG.ink, accent=LG.amber }) {
+  return (<svg width={size} height={size} viewBox="0 0 120 120" fill="none">
+    <circle cx="60" cy="60" r="38" stroke={c} strokeWidth="8" fill="none" strokeLinecap="round" strokeDasharray="172 240" transform="rotate(-218 60 60)"/>
+    <path d="M60 44 C62 54 66 58 76 60 C66 62 62 66 60 76 C58 66 54 62 44 60 C54 58 58 54 60 44 Z" fill={accent}/>
+  </svg>);
+}
+
+const LOGOS = [
+  { id:'L1', name:'한도 게이지', note:'사발 호 + 270° 링 + 오늘의 점. 앱 UI와 같은 DNA — 현재 1순위.',
+    R:(p)=><LogoGauge {...p}/> },
+  { id:'L2', name:'게이지 · 뒤집기', note:'완전히 뒤집은 버전 — 호가 위에서 감싸는 "보호/지붕" 컨셉.',
+    R:(p)=><LogoGauge {...p} flip/> },
+  { id:'L3', name:'게이지 · 앰버', note:'같은 마크, 링을 앰버로. 식욕·따뜻함 톤.',
+    R:(p)=><LogoGauge {...p} accent={LG.amber}/> },
+  { id:'L4', name:'비대칭 사발', note:'비대칭 사발 + 점 3개. 동적·식사 직관.',
+    R:(p)=><LogoBowl c={p.ink} size={p.size}/> },
+  { id:'L5', name:'사발 · 뒤집기', note:'뒤집은 사발 — 점이 아래로 떨어지는 "거름/필터" 컨셉 (신장 기능 은유).',
+    R:(p)=><LogoBowl c={p.ink} size={p.size} flip/> },
+  { id:'L6', name:'채운 사발 + 받침', note:'음각 4점(영양소 4종) + 받침. 가장 안정적인 단색 마크.',
+    R:(p)=><LogoFilled c={p.ink} bg={p.tile} size={p.size}/> },
+  { id:'L7', name:'워드마크', note:'심볼 없이 글자 + 앰버 점. Linear/Stripe 접근.',
+    R:(p)=><LogoWord scale={p.size/96} c={p.ink}/> },
+  { id:'L8', name:'매지 실루엣', note:'캐릭터가 곧 로고. 마스코트와 100% 일체.',
+    R:(p)=><LogoMagi c={p.ink} bg={p.tile} size={p.size}/> },
+  { id:'L9', name:'모자 마크', note:'마법사 모자만. "Magic"을 전면에 — 캐릭터와 연결되면서 추상적.',
+    R:(p)=><LogoHat c={p.ink} size={p.size}/> },
+  { id:'L10', name:'4점 링', note:'영양소 4점이 링을 이루고 받침 호가 담음.',
+    R:(p)=><LogoRing4 c={p.ink} size={p.size}/> },
+  { id:'L11', name:'스푼 한 술', note:'매일 한 술의 기록. 식사 도구 직관.',
+    R:(p)=><LogoSpoon c={p.ink} size={p.size}/> },
+  { id:'L12', name:'사발 + 젛가락', note:'한국 식사 그 자체. 가장 문화 특정적.',
+    R:(p)=><LogoChop c={p.ink} size={p.size}/> },
+  { id:'L13', name:'물방울 게이지', note:'신장(여과) + 한도 링의 결합 — 기능 은유 직결.',
+    R:(p)=><LogoDrop c={p.ink} size={p.size}/> },
+  { id:'L14', name:'잎 크래들', note:'잎이 점(오늘)을 받침 — 순한 자연식 톤.',
+    R:(p)=><LogoLeaf c={p.ink} size={p.size}/> },
+  { id:'L15', name:'스마일 사발', note:'호 + 점 2 = 미소이자 그릇. 친근감 최강.',
+    R:(p)=><LogoSmile c={p.ink} size={p.size}/> },
+  { id:'L16', name:'여과 흐름', note:'원 속 S 흐름 — 신장의 거름을 추상화 (완전 새 영역).',
+    R:(p)=><LogoFlow c={p.ink} size={p.size}/> },
+  { id:'L17', name:'달 크래들', note:'초승달이 점을 안음 — 차고 비는 한도.',
+    R:(p)=><LogoMoon c={p.ink} size={p.size}/> },
+  { id:'L18', name:'에코 사발', note:'겹겹의 호 — 꾸준함의 누적.',
+    R:(p)=><LogoEcho c={p.ink} size={p.size}/> },
+  { id:'L19', name:'스팀 사발', note:'갓 지은 한 끼의 온기.',
+    R:(p)=><LogoSteam c={p.ink} size={p.size}/> },
+  { id:'L20', name:'픽셀 사발', note:'8bit 캐릭터와 한 세트로 갈 때.',
+    R:(p)=><LogoPixelBowl c={p.ink} size={p.size}/> },
+  { id:'L21', name:'모자 + 게이지 밴드', note:'매지 모자에 한도 링 밴드 — 캐릭터·기능 결합.',
+    R:(p)=><LogoHatRing c={p.ink} size={p.size}/> },
+  { id:'L22', name:'쌀 세 톨', note:'밥 한 끼의 최소 단위 — 소박한 일상.',
+    R:(p)=><LogoGrain c={p.ink} size={p.size}/> },
+  { id:'L23', name:'4점 다이아', note:'그릇 없이 영양소 4점만 — 가장 추상·미니멀.',
+    R:(p)=><LogoDia c={p.ink} size={p.size}/> },
+  { id:'L24', name:'스파크 링', note:'한도 링 안의 매직 스파크 — 기능→마법으로 뒤집기.',
+    R:(p)=><LogoSparkRing c={p.ink} size={p.size}/> },
+];
+
+const LS_LOGO='magi-lab-logo';
+
+function LogoBoard({ sel, setSel, mobile }) {
+  return (
+    <div style={{ flex:1, margin: mobile?'12px 14px 14px':'16px 26px 26px', borderRadius:24, background:'#FBFAFF',
+      border:`1px solid ${PAL.cardLine}`, overflow: mobile?'visible':'auto', padding: mobile?12:20 }}>
+      <div style={{ display:'grid', gridTemplateColumns:`repeat(auto-fill, minmax(${mobile?160:230}px, 1fr))`, gap:12 }}>
+        {LOGOS.map(l=>{
+          const on = sel===l.id;
+          return (
+            <div key={l.id} onClick={()=>setSel(l.id)} style={{ cursor:'pointer',
+              background:'#FFFFFF', borderRadius:16, padding:'14px 14px 12px',
+              border: on?`2.5px solid ${LG.green}`:`1px solid ${PAL.cardLine}`,
+              boxShadow: on?'0 8px 20px rgba(31,122,82,0.18)':'0 2px 8px rgba(42,39,64,0.04)' }}>
+              <div style={{ display:'flex', alignItems:'baseline', gap:8, marginBottom:8 }}>
+                <span style={{ fontFamily:MONO, fontSize:10, fontWeight:800, color: on?LG.green:PAL.faint, letterSpacing:0.5 }}>{l.id}</span>
+                <span style={{ fontSize:13.5, fontWeight:800, color:PAL.ink }}>{l.name}</span>
+                {on && <span style={{ marginLeft:'auto', fontFamily:MONO, fontSize:9.5, fontWeight:800, color:'#FFF', background:LG.green, padding:'2px 7px', borderRadius:5 }}>선택됨</span>}
+              </div>
+              {/* hero */}
+              <div style={{ height:110, background:LG.paper, borderRadius:12,
+                display:'flex', alignItems:'center', justifyContent:'center' }}>
+                {l.R({ size:88, ink:LG.ink, tile:LG.paper })}
+              </div>
+              {/* contexts */}
+              <div style={{ display:'flex', gap:8, alignItems:'center', marginTop:10 }}>
+                <div style={{ width:40, height:40, borderRadius:10, background:'#FFFFFF', border:`1px solid ${PAL.cardLine}`,
+                  display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {l.R({ size:30, ink:LG.ink, tile:'#FFFFFF' })}
+                </div>
+                <div style={{ width:40, height:40, borderRadius:10, background:LG.ink,
+                  display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {l.R({ size:30, ink:'#FFFFFF', tile:LG.ink })}
+                </div>
+                <div style={{ width:40, height:40, borderRadius:10, background:LG.green,
+                  display:'flex', alignItems:'center', justifyContent:'center' }}>
+                  {l.R({ size:30, ink:'#FFFFFF', tile:LG.green })}
+                </div>
+                <div style={{ marginLeft:'auto', display:'flex', flexDirection:'column', alignItems:'center', gap:2 }}>
+                  {l.R({ size:16, ink:LG.ink, tile:LG.paper })}
+                  <span style={{ fontFamily:MONO, fontSize:7.5, color:PAL.faint, fontWeight:700 }}>16px</span>
+                </div>
+              </div>
+              <div style={{ fontSize:11, color:PAL.soft, lineHeight:1.5, fontWeight:500, marginTop:9 }}>{l.note}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+// ── viewer ──
+const STYLES = [
+  ['sketch','기존 · 스케치'], ['current','현재 · 정제'], ['simple','심플 플랫'],
+  ['sticker','스티커'], ['line','라인'], ['soft3d','소프트 3D'],
+  ['pixel','픽셀 8bit'], ['retro','레트로 카툰'], ['clay','클레이'],
+  ['kawaii','카와이'], ['papercut','페이퍼 컷'], ['pop','팝 코믹'],
+  ['jelly','젤리'], ['gradient','그라디언트'], ['mochi','모찌'], ['water','수채'],
+  ['aura','오라'], ['neon','네온'], ['riso','리소'], ['knit','뜨개'],
+];
+const MOODS = [['happy','반가워'],['smile','뿌듯'],['wink','윙크'],['proud','칭찬'],['surprised','놀람'],['sleepy','졸림']];
+
+const LS_KEY='magi-lab-v1';
+function load() { try { return JSON.parse(localStorage.getItem(LS_KEY))||{} } catch(e){ return {} } }
+
+function Seg({ options, value, onChange, mini }) {
+  return (
+    <div style={{ display:'flex', flexWrap:'wrap', gap:6 }}>
+      {options.map(([v,l])=>(
+        <button key={v} onClick={()=>onChange(v)} style={{
+          padding: mini?'6px 10px':'8px 13px', borderRadius:10, cursor:'pointer',
+          border: value===v ? `1.5px solid ${PAL.hat}` : `1px solid ${PAL.cardLine}`,
+          background: value===v ? '#EFEDFB' : '#FFFFFF',
+          color: value===v ? PAL.hat : PAL.ink,
+          fontFamily:F, fontSize: mini?11.5:12.5, fontWeight:700, letterSpacing:-0.2,
+        }}>{l}</button>
+      ))}
+    </div>
+  );
+}
+function Toggle({ label, value, onChange }) {
+  return (
+    <button onClick={()=>onChange(!value)} style={{
+      display:'flex', alignItems:'center', gap:8, padding:'7px 12px', borderRadius:10, cursor:'pointer',
+      border:`1px solid ${PAL.cardLine}`, background:'#FFF', fontFamily:F, fontSize:12.5, fontWeight:700, color:PAL.ink }}>
+      <span style={{ width:30, height:18, borderRadius:9, background: value?PAL.hat:'#D9D6E8', position:'relative', transition:'background 0.15s' }}>
+        <span style={{ position:'absolute', top:2, left: value?14:2, width:14, height:14, borderRadius:7, background:'#FFF', transition:'left 0.15s' }}/>
+      </span>
+      {label}
+    </button>
+  );
+}
+
+function App() {
+  const init = load();
+  const [tab,setTab]=React.useState(init.tab||'char');
+  const [style,setStyle]=React.useState(init.style||'current');
+  const [mood,setMood]=React.useState(init.mood||'happy');
+  const [body,setBody]=React.useState(init.body||'#C9C4F0');
+  const [hat,setHat]=React.useState(init.hat!==false);
+  const [sparkle,setSparkle]=React.useState(init.sparkle!==false);
+  const [bg,setBg]=React.useState(init.bg||'paper');
+  const [grid,setGrid]=React.useState(init.grid||false);
+  const [selLogo,setSelLogo]=React.useState(()=>{ try { return localStorage.getItem(LS_LOGO)||'L1' } catch(e){ return 'L1' } });
+  const [vw,setVw]=React.useState(window.innerWidth);
+  React.useEffect(()=>{ const f=()=>setVw(window.innerWidth); window.addEventListener('resize',f); return ()=>window.removeEventListener('resize',f); },[]);
+  const mobile = vw < 760;
+
+  React.useEffect(()=>{ localStorage.setItem(LS_KEY, JSON.stringify({tab,style,mood,body,hat,sparkle,bg,grid})); },[tab,style,mood,body,hat,sparkle,bg,grid]);
+  React.useEffect(()=>{ try { localStorage.setItem(LS_LOGO, selLogo) } catch(e){} },[selLogo]);
+
+  const bgCol = BGS.find(b=>b[0]===bg)[1];
+  const onDark = bg==='dark'||bg==='brand';
+  const selName = LOGOS.find(l=>l.id===selLogo)?.name;
+
+  return (
+    <div style={{ position:'fixed', inset:0, display:'flex', flexDirection: mobile?'column':'row', fontFamily:F, background:'#F2F0EA', overflow: mobile?'auto':'hidden' }}>
+      <div style={{ flex:1, display:'flex', flexDirection:'column', minWidth:0 }}>
+        <div style={{ padding: mobile?'14px 14px 0':'18px 26px 0', display:'flex', alignItems:'center', gap:10, flexWrap:'wrap' }}>
+          <span style={{ fontSize:19, fontWeight:900, letterSpacing:-0.5, color:PAL.ink }}>Magic Kidney LAB</span>
+          {/* tabs */}
+          <div style={{ display:'flex', gap:4, background:'#FFFFFF', borderRadius:12, padding:3, border:`1px solid ${PAL.cardLine}` }}>
+            {[['char','캐릭터 20'],['logo','로고 24']].map(([v,l])=>(
+              <button key={v} onClick={()=>setTab(v)} style={{
+                padding:'7px 14px', borderRadius:9, cursor:'pointer', border:'none',
+                background: tab===v ? PAL.hat : 'transparent',
+                color: tab===v ? '#FFF' : PAL.soft,
+                fontFamily:F, fontSize:12.5, fontWeight:800, letterSpacing:-0.2 }}>{l}</button>
+            ))}
+          </div>
+          <div style={{ flex:1 }}/>
+          {tab==='char' && <Toggle label="모든 스타일 한눈에" value={grid} onChange={setGrid}/>}
+        </div>
+
+        {tab==='logo' ? (
+          <LogoBoard sel={selLogo} setSel={setSelLogo} mobile={mobile}/>
+        ) : (
+          <div style={{ flex:1, margin: mobile?'12px 14px 14px':'16px 26px 26px', minHeight: mobile?380:0, borderRadius:24, background:bgCol,
+            border:`1px solid ${PAL.cardLine}`, display:'flex', alignItems:'center', justifyContent:'center',
+            transition:'background 0.2s', overflow:'auto' }}>
+            {grid ? (
+              <div style={{ display:'grid', gridTemplateColumns: mobile?'repeat(2, 1fr)':'repeat(4, 1fr)', gap:12, padding:16 }}>
+                {STYLES.map(([s,l])=>(
+                  <div key={s} onClick={()=>{setStyle(s);setGrid(false);}} style={{ cursor:'pointer',
+                    background: onDark?'rgba(255,255,255,0.07)':'rgba(255,255,255,0.75)', borderRadius:16,
+                    padding:'12px 8px 10px', display:'flex', flexDirection:'column', alignItems:'center', gap:6,
+                    border: style===s?`2px solid ${PAL.pom}`:'2px solid transparent' }}>
+                    <Wiz size={118} style={s} mood={mood} body={body} hat={hat} sparkle={sparkle} onDark={onDark}/>
+                    <div style={{ fontSize:11.5, fontWeight:800, color: onDark?'#FFF':PAL.ink }}>{l}</div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:14 }}>
+                <Wiz size={mobile?230:340} style={style} mood={mood} body={body} hat={hat} sparkle={sparkle} onDark={onDark}/>
+                <div style={{ fontFamily:MONO, fontSize:11, color: onDark?'rgba(255,255,255,0.6)':PAL.faint, letterSpacing:1.5, fontWeight:700 }}>
+                  {STYLES.find(s=>s[0]===style)[1]} · {MOODS.find(m=>m[0]===mood)[1]}
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* controls */}
+      <div style={{ width: mobile?'auto':280, flexShrink:0, background:'#FFFFFF',
+        borderLeft: mobile?'none':`1px solid ${PAL.cardLine}`, borderTop: mobile?`1px solid ${PAL.cardLine}`:'none',
+        padding: mobile?'16px 14px 28px':'22px 20px', display:'flex', flexDirection:'column', gap:16, overflowY: mobile?'visible':'auto' }}>
+        {tab==='logo' ? (
+          <React.Fragment>
+            <div>
+              <div style={{ fontFamily:MONO, fontSize:9.5, color:PAL.faint, letterSpacing:1.4, textTransform:'uppercase', fontWeight:800, marginBottom:8 }}>선택된 로고</div>
+              <div style={{ padding:'14px 16px', background:'#F1F8F4', border:`1.5px solid ${LG.green}`, borderRadius:14 }}>
+                <div style={{ fontFamily:MONO, fontSize:10.5, fontWeight:800, color:LG.green }}>{selLogo}</div>
+                <div style={{ fontSize:16, fontWeight:800, color:PAL.ink, marginTop:3 }}>{selName}</div>
+              </div>
+            </div>
+            <div style={{ padding:'12px 14px', background:'#F6F5FB', borderRadius:12,
+              fontSize:11.5, color:PAL.soft, lineHeight:1.6, fontWeight:500 }}>
+              카드를 눌러 로고를 선택하세요. 선택은 저장됩니다.<br/><br/>
+              <b>디자이너님께:</b> 마음에 드는 캐릭터 스타일 이름 + 로고 번호(예: "팝 코믹 + L1")를 회신해 주세요. L2·L5는 기존 안을 완전히 뒤집은 버전입니다.
+            </div>
+          </React.Fragment>
+        ) : (
+          <React.Fragment>
+            <div>
+              <div style={{ fontFamily:MONO, fontSize:9.5, color:PAL.faint, letterSpacing:1.4, textTransform:'uppercase', fontWeight:800, marginBottom:8 }}>스타일 · 20 versions</div>
+              <Seg options={STYLES} value={style} onChange={setStyle} mini/>
+            </div>
+            <div>
+              <div style={{ fontFamily:MONO, fontSize:9.5, color:PAL.faint, letterSpacing:1.4, textTransform:'uppercase', fontWeight:800, marginBottom:8 }}>표정 · Mood</div>
+              <Seg options={MOODS} value={mood} onChange={setMood} mini/>
+            </div>
+            <div>
+              <div style={{ fontFamily:MONO, fontSize:9.5, color:PAL.faint, letterSpacing:1.4, textTransform:'uppercase', fontWeight:800, marginBottom:8 }}>몸 색 · Body</div>
+              <div style={{ display:'flex', gap:8 }}>
+                {BODY_COLORS.map(([c,l])=>(
+                  <button key={c} onClick={()=>setBody(c)} title={l} style={{
+                    width:34, height:34, borderRadius:17, background:c, cursor:'pointer',
+                    border: body===c?`3px solid ${PAL.hat}`:'2px solid rgba(42,39,64,0.12)' }}/>
+                ))}
+              </div>
+            </div>
+            <div>
+              <div style={{ fontFamily:MONO, fontSize:9.5, color:PAL.faint, letterSpacing:1.4, textTransform:'uppercase', fontWeight:800, marginBottom:8 }}>배경 · Background</div>
+              <Seg options={BGS.map(([v,,l])=>[v,l])} value={bg} onChange={setBg} mini/>
+            </div>
+            <div style={{ display:'flex', flexDirection:'column', gap:8 }}>
+              <Toggle label="모자" value={hat} onChange={setHat}/>
+              <Toggle label="반짝이" value={sparkle} onChange={setSparkle}/>
+            </div>
+            <div style={{ marginTop:'auto', padding:'12px 14px', background:'#F6F5FB', borderRadius:12,
+              fontSize:11.5, color:PAL.soft, lineHeight:1.55, fontWeight:500 }}>
+              <b>디자이너님께:</b> 스타일·표정·색을 조합해 보고, 마음에 드는 캐릭터 스타일 이름과 로고 탭의 번호를 회신해 주세요.
+            </div>
+          </React.Fragment>
+        )}
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+  </script>
+</body>
+</html>
