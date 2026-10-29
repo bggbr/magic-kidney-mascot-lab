@@ -18,7 +18,10 @@ Brand images in `assets/` are copied without modification from the Magic Kidney 
 ## Google website verification
 
 Website publication and Google website ownership verification are separate steps.
-No Search Console verification token has been provided or installed yet.
+The Search Console HTML verification meta tag supplied by the account owner on
+2026-10-29 is installed in the `<head>` of `index.html`. The account owner still
+needs to click **Verify** in Search Console and complete the Play Console
+website association. Installing the tag alone does not complete those steps.
 
 1. The Play Console account owner adds the full public URL above as a **URL-prefix** property in Google Search Console.
 2. Select **HTML tag**, then supply the generated `google-site-verification` meta tag to the website maintainer.
